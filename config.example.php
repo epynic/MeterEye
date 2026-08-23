@@ -11,3 +11,16 @@ define('DB_HOST', '127.0.0.1');
 define('DB_NAME', 'your_db_name');
 define('DB_USER', 'your_db_user');
 define('DB_PASS', 'your_db_password');
+
+// Where the worker writes its logs/state (worker.log, ocr_health.json,
+// alert_state.json). Defaults to the repo's worker/ dir.
+define('WORKER_DIR', __DIR__ . '/worker/');
+
+// Shown as the page title on index.php.
+define('SITE_NAME', 'EB Monitor');
+
+// Optional: public URL of your dashboard, appended to alert messages.
+define('DASHBOARD_URL', '');
+
+// From: address for email alerts sent by monitor.php.
+define('ALERT_FROM', 'eb-monitor@localhost');
