@@ -130,15 +130,21 @@ web/
   monitor.php                 health checker (run by cron; Telegram/email alerts)
   snapshot_baseline.php       monthly auto-baseline (run by cron)
   _lib.php                    shared PHP (db, settings, cycle math, cost, liveness)
-db/schema.sql                table definitions + example settings seed data
+db/schema.sql                readings, readings_raw, settings, cycle_baseline,
+                              cycle_actual(_edits), worker_state + seed data
 config.example.php           copy to config.php and fill in your own secrets
 ```
 
 ## Setup
 
 1. **Database**: `mysql < db/schema.sql` against a fresh DB, create a
-   dedicated app user with SELECT/INSERT on `readings` and no DELETE grant
+   dedicated app user with SELECT/INSERT on `readings` and **no DELETE grant**
    (the guards depend on the app never being able to rewrite history).
+   `readings_raw` is the one exception — the app needs DELETE there too, since
+   `ocr_health.py` prunes it on a 30-day rolling window as part of its
+   consensus self-heal check. `cycle_actual`/`cycle_actual_edits` back an
+   optional feature in `bills.php`: record the real bill once it arrives, see
+   variance against the estimate, with edits kept as an audit trail.
 2. **Config**: copy `config.example.php` → `config.php`, fill in a random
    `UPLOAD_KEY` and your DB credentials. Never commit `config.php`.
 3. **Web**: serve `web/` behind your web server of choice; point
@@ -147,7 +153,16 @@ config.example.php           copy to config.php and fill in your own secrets
    then cron `worker.py` every minute, `snapshot_baseline.php` once a month,
    `monitor.php` every few minutes, `ocr_health.py` hourly, and an image
    cleanup job (uploaded JPEGs aren't kept long — only the extracted numbers
-   are).
+   are). Wrap `worker.py` and `ocr_health.py` in `flock -n` against a lock
+   file so an occasional slow run doesn't overlap the next cron tick:
+
+   ```cron
+   * * * * *   flock -n /tmp/eb_worker.lock      venv/bin/python worker/worker.py       >> worker.log 2>&1
+   50 * * * *  find storage/eb_images -name "*.jpg" -mmin +2880 -delete
+   0 1 * * *   php web/snapshot_baseline.php     >> baseline.log 2>&1
+   */5 * * * * php web/monitor.php               >> monitor.log 2>&1
+   15 * * * *  flock -n /tmp/eb_ocr_health.lock   venv/bin/python worker/ocr_health.py --hours=4 >> ocr_health.log 2>&1
+   ```
 5. **Calibrate**: run `worker/calibrate.py` pointed at your own camera frames
    — the shipped `calibration.example.json` is specific to one physical
    mount and will not just work for yours.

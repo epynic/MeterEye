@@ -24,7 +24,23 @@ CREATE TABLE `readings` (
   PRIMARY KEY (`id`),
   KEY `idx_metric_time` (`metric`,`captured_at`),
   KEY `idx_time` (`captured_at`)
-) ENGINE=InnoDB AUTO_INCREMENT=65328 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=65338 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `readings_raw`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `readings_raw` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `captured_at` datetime NOT NULL,
+  `metric` varchar(24) NOT NULL,
+  `value` decimal(12,3) NOT NULL,
+  `unit` varchar(8) NOT NULL,
+  `phase` char(1) DEFAULT NULL,
+  `src` varchar(48) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `idx_metric_cap` (`metric`,`captured_at`)
+) ENGINE=InnoDB AUTO_INCREMENT=90874 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `settings`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -47,6 +63,38 @@ CREATE TABLE `cycle_baseline` (
   `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`cycle_start`,`metric`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `cycle_actual`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `cycle_actual` (
+  `cycle_start` date NOT NULL,
+  `amount` decimal(10,2) NOT NULL,
+  `units` decimal(10,2) DEFAULT NULL,
+  `bill_date` date DEFAULT NULL,
+  `note` varchar(255) DEFAULT NULL,
+  `updated_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`cycle_start`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `cycle_actual_edits`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `cycle_actual_edits` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `cycle_start` date NOT NULL,
+  `old_amount` decimal(10,2) DEFAULT NULL,
+  `old_units` decimal(10,2) DEFAULT NULL,
+  `old_bill_date` date DEFAULT NULL,
+  `old_note` varchar(255) DEFAULT NULL,
+  `new_amount` decimal(10,2) NOT NULL,
+  `new_units` decimal(10,2) DEFAULT NULL,
+  `new_bill_date` date DEFAULT NULL,
+  `new_note` varchar(255) DEFAULT NULL,
+  `edited_at` datetime NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `cycle_start` (`cycle_start`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `worker_state`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
