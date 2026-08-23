@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # Replicates worker.py's cumulative decision logic (importing its REAL constants) and runs the
 # actual incident scenarios through it. Proves: bad reading held, correct reading flows, mislabel killed.
-import sys, datetime
-sys.path.insert(0, "/var/www/prasanha.com/worker")
+import sys, os, datetime
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import worker as W
 
 def decide(metric, v, ts, last, pending):

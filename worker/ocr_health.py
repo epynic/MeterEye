@@ -117,7 +117,7 @@ def _interp(xs_ts, ys, ts):
 def db():
     import subprocess, pymysql
     out = subprocess.run(["php", "-r",
-        'require "/var/www/prasanha.com/config/app.php";'
+        'require "' + os.environ.get("EB_CONFIG", os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "config.php")) + '";'
         'echo json_encode([DB_USER,DB_PASS,DB_NAME]);'],
         capture_output=True, text=True)
     user, pw, name = json.loads(out.stdout)

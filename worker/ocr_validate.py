@@ -10,7 +10,7 @@ identical across candidates — only the digit-decode changes — so this isolat
 Run: sudo -u www-data ./venv/bin/python ocr_validate.py [stride]
 """
 import sys, glob, os, re, statistics, cv2, numpy as np
-sys.path.insert(0, "/var/www/prasanha.com/worker")
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import lab, labels
 
 IMG = lab.IMG + "/"

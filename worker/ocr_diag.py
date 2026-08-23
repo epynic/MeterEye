@@ -8,8 +8,8 @@ Runs the EXACT frames that produced wrong results (plus the 6 calibration-good f
 
 Run:  sudo -u www-data ./venv/bin/python ocr_diag.py
 """
-import sys, cv2, numpy as np
-sys.path.insert(0, "/var/www/prasanha.com/worker")
+import sys, os, cv2, numpy as np
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import lab
 
 IMG = lab.IMG + "/"

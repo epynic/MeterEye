@@ -11,8 +11,8 @@ Usage:
 """
 import sys, os, json, cv2, numpy as np, itertools
 
-WEB = "/var/www/prasanha.com/public/eb/ocr-lab"
-IMG = "/var/www/prasanha.com/storage/eb_images"
+WEB = os.environ.get("EB_LAB_WEB", os.path.join(os.path.dirname(os.path.abspath(__file__)), "ocr-lab"))
+IMG = os.environ.get("EB_IMAGES", os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "storage", "eb_images"))
 
 GT = {
     "2026-06-13_150004_4a0a41.jpg": "870.30",
