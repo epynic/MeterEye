@@ -123,6 +123,8 @@ web/
   upload.php                ESP32 upload endpoint (API-key checked)
   dashboard.php              summary: import/export/net, cost, live status
   detail.php                 analytics: daily bars, per-cycle, voltage/current
+  bills.php                   per-cycle bill estimate + breakdown vs. actual
+  savings.php                 solar savings estimate (conservative floor)
   health.php                 live status board
   settings.php                admin (key-locked): tariff, billing day, baselines
   monitor.php                 health checker (run by cron; Telegram/email alerts)
