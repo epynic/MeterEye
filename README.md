@@ -1,4 +1,4 @@
-# EB Solar Monitor
+# MeterEye
 
 A camera watches a physical electricity meter's LCD screen so you don't have
 to. An ESP32-CAM photographs a 3-phase solar net-metering meter every ~7
