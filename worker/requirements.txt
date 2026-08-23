@@ -1,0 +1,4 @@
+numpy==2.4.6
+opencv-python-headless==4.13.0.92
+pillow==12.2.0
+PyMySQL==1.2.0

@@ -1,0 +1,13 @@
+config.php
+*.log
+*.bak-*
+venv/
+__pycache__/
+*.pyc
+storage/eb_images/
+.pio/
+.vscode/
+.DS_Store
+worker_state.json
+alert_state.json
+ocr_health.json

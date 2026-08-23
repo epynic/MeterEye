@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "created": "2026-06-14",
+  "canonical": {
+    "w": 1000,
+    "h": 400
+  },
+  "grid": {
+    "c1": 531.0,
+    "pitch": 80,
+    "cellw": 66,
+    "cy0": 135,
+    "cy1": 323,
+    "ncells": 6,
+    "shear": 0.0
+  },
+  "decode": {
+    "seg_f": 0.15,
+    "blank_f": 0.06
+  },
+  "decimals": 2,
+  "baseline_quad": [
+    [
+      31,
+      327
+    ],
+    [
+      885,
+      355
+    ],
+    [
+      888,
+      617
+    ],
+    [
+      23,
+      588
+    ]
+  ],
+  "n_calib_frames": 400,
+  "clean_rate": "326/400"
+}
