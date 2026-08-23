@@ -1,5 +1,5 @@
 <?php
-require_once '/var/www/prasanha.com/config/app.php';
+require_once getenv('EB_CONFIG') ?: __DIR__ . '/../config.php';
 
 header('Content-Type: application/json');
 

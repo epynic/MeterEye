@@ -9,7 +9,7 @@ $gapMin   = (int)($cfg['alert_gap_min'] ?? 20);     // no frames for this many m
 $token    = $cfg['telegram_token'] ?? '';
 $chat     = $cfg['telegram_chat']  ?? '';
 $email    = $cfg['alert_email']    ?? '';
-$stateF   = '/var/www/prasanha.com/worker/alert_state.json';
+$stateF   = WORKER_DIR . 'alert_state.json';
 $state    = file_exists($stateF) ? (json_decode(file_get_contents($stateF), true) ?: []) : [];
 
 $fails = [];   // key => human message
@@ -31,7 +31,7 @@ if ($freePct < 10) $fails['disk'] = "Disk space low: {$freePct}% free.";
 // fix it (status 'poison_high') — i.e. it needs a human. A successful auto-heal is silent (logged
 // to ocr_heal.log + shown on health.php). Raw OCR misreads alone are NOT an alert: the guard makes
 // them harmless, so ~32% raw error with clean registers is normal.
-$ocrF = '/var/www/prasanha.com/worker/ocr_health.json';
+$ocrF = WORKER_DIR . 'ocr_health.json';
 if (file_exists($ocrF) && ($oh = json_decode(file_get_contents($ocrF), true))) {
     foreach (['ip_cu_fd'=>'import', 'ep_cu_fd'=>'export'] as $m => $lbl) {
         $r = $oh['metrics'][$m] ?? null;
@@ -52,7 +52,7 @@ function notify($title, $body, $token, $chat, $email) {
             CURLOPT_POSTFIELDS=>['chat_id'=>$chat, 'text'=>$msg]]);
         curl_exec($c); curl_close($c);
     }
-    if ($email) @mail($email, "EB Meter: $title", $msg, "From: eb@prasanha.com");
+    if ($email) @mail($email, "EB Meter: $title", $msg, "From: " . (defined('ALERT_FROM') ? ALERT_FROM : 'eb-monitor@localhost'));
 }
 
 $prev = $state['fails'] ?? [];
@@ -60,7 +60,7 @@ $nowKeys = array_keys($fails);
 
 // new failures
 foreach ($fails as $k => $m) if (!in_array($k, $prev))
-    notify("🔴 EB alert: $k", $m . "\n— prasanha.com/eb/dashboard.php", $token, $chat, $email);
+    notify("🔴 EB alert: $k", $m . (defined('DASHBOARD_URL') && DASHBOARD_URL ? "\n" . DASHBOARD_URL : ""), $token, $chat, $email);
 // recoveries
 foreach ($prev as $k) if (!in_array($k, $nowKeys))
     notify("✅ EB recovered: $k", "$k is back to normal.", $token, $chat, $email);

@@ -1,5 +1,5 @@
 <?php
-require_once '/var/www/prasanha.com/config/app.php';
+require_once getenv('EB_CONFIG') ?: __DIR__ . '/../config.php';
 
 $files = glob(IMAGES_DIR . '*.jpg') ?: [];
 usort($files, fn($a, $b) => filemtime($b) - filemtime($a));
@@ -15,7 +15,7 @@ $slice    = array_slice($files, ($page - 1) * $perPage, $perPage);
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>EB Monitor — prasanha.com</title>
+  <title><?= htmlspecialchars(defined('SITE_NAME') ? SITE_NAME : 'EB Monitor') ?></title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -114,7 +114,7 @@ $slice    = array_slice($files, ($page - 1) * $perPage, $perPage);
       <p class="meta"><?= $total ?> image<?= $total !== 1 ? 's' : '' ?>
         &mdash; page <?= $page ?> of <?= $pages ?></p>
     </div>
-    <a class="back" href="/">&larr; prasanha.com</a>
+    <a class="back" href="/">&larr; home</a>
   </header>
 
   <?php if ($total === 0): ?>

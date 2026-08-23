@@ -1,6 +1,6 @@
 <?php
 // Shared library for the EB dashboard pages. Cumulative-meter aware + billing cycles.
-require_once '/var/www/prasanha.com/config/app.php';
+require_once getenv('EB_CONFIG') ?: __DIR__ . '/../config.php';
 
 function eb_db() {
   $m = new mysqli('localhost', DB_USER, DB_PASS, DB_NAME);
@@ -127,11 +127,11 @@ function eb_alerts($db, $cfg, $TZ){
   [$camT,$camAge,$online] = eb_liveness($db,$TZ);
   if ($camT === null)                                   $a['camera'] = ['bad', 'No camera frames on record.'];
   elseif ($camAge !== null && $camAge > $gapMin)        $a['camera'] = ['bad', "No camera frames for {$camAge} min — camera or worker may be down."];
-  $wm = @filemtime('/var/www/prasanha.com/worker/worker.log');
+  $wm = @filemtime(WORKER_DIR . 'worker.log');
   if ($wm && (time()-$wm > 180))                        $a['worker'] = ['warn', 'Worker has not run in 3+ min (cron may be stuck).'];
   $freePct = round(disk_free_space('/')/disk_total_space('/')*100);
   if ($freePct < 10)                                    $a['disk'] = ['bad', "Disk space low: {$freePct}% free."];
-  $ocrF = '/var/www/prasanha.com/worker/ocr_health.json';
+  $ocrF = WORKER_DIR . 'ocr_health.json';
   if (file_exists($ocrF) && ($oh = json_decode(file_get_contents($ocrF), true))) {
     foreach (['ip_cu_fd'=>'import','ep_cu_fd'=>'export'] as $m=>$lbl) {
       $r = $oh['metrics'][$m] ?? null; if (!$r) continue;

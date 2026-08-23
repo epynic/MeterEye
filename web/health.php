@@ -18,12 +18,12 @@ $checks[] = ['Camera + OCR worker', $online?'ok':'bad',
   $online? 'receiving frames' : 'NO frames for '.($camAge??'?').' min — camera/worker may be down'];
 
 // worker cron heartbeat (worker.log mtime)
-$wl = fmtmtime('/var/www/prasanha.com/worker/worker.log',$TZ);
+$wl = fmtmtime(WORKER_DIR . 'worker.log',$TZ);
 $wlOk = $wl && ($now->getTimestamp()-$wl->getTimestamp() < 180);
 $checks[] = ['Worker cron (1 min)', $wlOk?'ok':'warn', 'last run '.ago($wl,$now), $wlOk?'running on schedule':'no run in 3+ min'];
 
 // monitor cron heartbeat
-$ml = fmtmtime('/var/www/prasanha.com/worker/monitor.log',$TZ);
+$ml = fmtmtime(WORKER_DIR . 'monitor.log',$TZ);
 $mlOk = $ml && ($now->getTimestamp()-$ml->getTimestamp() < 600);
 $checks[] = ['Monitor cron (5 min)', $mlOk?'ok':'warn', 'last run '.ago($ml,$now), $mlOk?'checking health':'no run in 10+ min'];
 
@@ -39,7 +39,7 @@ $checks[] = ['Disk space', $freePct>15?'ok':($freePct>8?'warn':'bad'), "{$freePc
 
 // images + cleanup — show OLDEST image age so the rolling 2-day window is visible and a stalled
 // cleanup is obvious (glob() returns names sorted ascending, so $imgs[0] is the oldest — cheap).
-$imgs = glob('/var/www/prasanha.com/storage/eb_images/*.jpg');
+$imgs = glob(IMAGES_DIR . '*.jpg');
 $nimg = count($imgs);
 $oldest = $nimg ? eb_ist(date('Y-m-d H:i:s', filemtime($imgs[0])), $TZ) : null;
 $oldAge = $oldest ? ($now->getTimestamp()-$oldest->getTimestamp())/86400 : 0;   // days
@@ -48,7 +48,7 @@ $checks[] = ['Images on disk', $imgSt, "$nimg files · oldest ".number_format($o
              $oldAge > 2.6 ? 'cleanup may be stalled (retention is 2 days)' : 'auto-cleaned hourly · 2-day retention'];
 
 // OCR accuracy + register self-heal (ocr_health.json, refreshed hourly by ocr_health.py)
-$ocrF = '/var/www/prasanha.com/worker/ocr_health.json';
+$ocrF = WORKER_DIR . 'ocr_health.json';
 if (file_exists($ocrF) && ($oh = json_decode(file_get_contents($ocrF), true))) {
   $worst = 'ok'; $bits = [];
   foreach (['ip_cu_fd'=>'import','ep_cu_fd'=>'export'] as $m=>$lbl) {
